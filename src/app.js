@@ -1,13 +1,21 @@
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+'use strict';
+const createError = require('http-errors'),
+      express = require('express'),
+      path = require('path'),
+      mongoose = require('mongoose'),
+      cookieParser = require('cookie-parser'),
+      logger = require('morgan'),
+      config = require('config');
 
-const usersRouter = require('./routes/users');
-const clientsRouter = require('./routes/clients');
-const questionsRouter = require('./routes/questions');
-const answersRouter = require('./routes/answers');
+const usersRouter = require('./routes/users'),
+      clientsRouter = require('./routes/clients'),
+      questionsRouter = require('./routes/questions'),
+      answersRouter = require('./routes/answers'),
+      conversationsRouter = require('./routes/conversations');
+
+mongoose.connect(config.database, { 
+  useNewUrlParser: true
+});
 
 const app = express();
 
@@ -20,6 +28,7 @@ app.use('/users', usersRouter);
 app.use('/clients', clientsRouter);
 app.use('/questions', questionsRouter);
 app.use('/answers', answersRouter);
+app.use('/conversations', conversationsRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
