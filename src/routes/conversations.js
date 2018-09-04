@@ -30,7 +30,7 @@ router.get('/:userId/:clientId/:forClient', async (req, res, next) => {
         conversations[index].hasNew = false;
       }
     }
-    res.send({ conversations });
+    res.send( conversations );
   } catch (error) {
     next(error);
   }

@@ -36,7 +36,7 @@ router.post('/', async (req, res, next) => {
     });
 
     const newQuestion = await question.save();
-    res.status(201).send({response:'Question sent: ' + newQuestion._id});
+    res.status(201).send({conversation: newConversation});
   } catch (error) {
     next(error);
   }

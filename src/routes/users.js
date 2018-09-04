@@ -9,7 +9,7 @@ const express = require('express'),
 router.get('/', async (req, res, next) => {
   try {
     const users = await User.find();
-    res.send({ users });
+    res.send( users );
   } catch (error) {
     next(error);
   }

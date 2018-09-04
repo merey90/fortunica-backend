@@ -1,11 +1,8 @@
 'use strict';
 const createError = require('http-errors'),
       express = require('express'),
-      path = require('path'),
-      mongoose = require('mongoose'),
       cookieParser = require('cookie-parser'),
-      logger = require('morgan'),
-      config = require('config');
+      logger = require('morgan');
 
 const usersRouter = require('./routes/users'),
       clientsRouter = require('./routes/clients'),
@@ -13,16 +10,21 @@ const usersRouter = require('./routes/users'),
       answersRouter = require('./routes/answers'),
       conversationsRouter = require('./routes/conversations');
 
-mongoose.connect(config.database, { 
-  useNewUrlParser: true
-});
-
 const app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Enable CORS from client-side
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Credentials');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  next();
+});
 
 app.use('/users', usersRouter);
 app.use('/clients', clientsRouter);

@@ -10,7 +10,7 @@ const express = require('express'),
 router.get('/', async (req, res, next) => {
   try {
     const clients = await Client.find().lean();
-    res.send({ clients });
+    res.send( clients );
   } catch (error) {
     next(error);
   }
@@ -21,7 +21,8 @@ router.get('/', async (req, res, next) => {
  */
 router.get('/:name', async (req, res, next) => {
   try {
-    const client = await Client.findOne({ name: req.params.id });
+    const client = await Client.findOne({ name: req.params.name });
+    console.log(client);
     res.send({ client });
   } catch (error) {
     next(error);
@@ -34,12 +35,12 @@ router.get('/:name', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
   if(!req.body.name) {
     res.status(422).send({ error: 'Please enter a name of new Client.' });
-    return next();
+    next();
   }
 
   if(!req.body.zodiac) {
     res.status(422).send({ error: 'Please choose a zodiac of new Client.' });
-    return next();
+    next();
   }
 
   const client = new Client({
@@ -49,7 +50,7 @@ router.post('/', async (req, res, next) => {
 
   try {
     const newClient = await client.save();
-    res.status(201).send({response:'Client saved: ' + newClient._id});
+    res.status(201).send({ client: newClient });
   } catch (error) {
     next(error);
   }
