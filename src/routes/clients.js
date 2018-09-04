@@ -1,7 +1,8 @@
 'use strict';
 const express = require('express'),
       router = express.Router(),
-      Client = require('../models/client');
+      Client = require('../models/client'),
+      Conversation = require('../models/conversation');
 
 
 /**
@@ -12,6 +13,22 @@ router.get('/', async (req, res, next) => {
     const clients = await Client.find().lean();
     res.send( clients );
   } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * Get list of all clients having conversation with user
+ */
+router.get('/user/:id', async (req, res, next) => {
+  try {
+    const clientIds = await Conversation.distinct('client', {user: req.params.id});
+    const clients = await Client.find({
+      _id: { $in: clientIds }
+    }).lean();
+    res.send( clients );
+  } catch (error) {
+    console.log(error);
     next(error);
   }
 });
