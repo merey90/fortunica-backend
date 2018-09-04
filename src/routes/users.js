@@ -16,21 +16,24 @@ router.get('/', async (req, res, next) => {
 });
 
 /**
- * Register new expert
+ * Return expert or register new if not found
  */
-router.post('/', async (req, res, next) => {
-  if(!req.body.name) {
+router.get('/:name', async (req, res, next) => {
+  if(!req.params.name) {
     res.status(422).send({ error: 'Please enter a name of new User.' });
     return next();
   }
-
-  const user = new User({
-    name: req.body.name
-  });
-
   try {
-    const newUser = await user.save();
-    res.status(201).send({response:'User saved: ' + newUser._id});
+    let user = await User.findOne({name: req.params.name});
+
+    if(!user){
+      const newUser = new User({
+        name: req.params.name
+      });
+      user = await newUser.save();
+    }
+
+    res.status(201).send({user});
   } catch (error) {
     next(error);
   }
