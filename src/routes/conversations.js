@@ -35,11 +35,21 @@ router.get('/:userId/:clientId/:forClient', async (req, res, next) => {
 
 /**
  * Returns conversation's messages.
+ * 
+ * :forClient param is to mark conversation to be readen according to who
+ * is reading the dialog
  */
-router.get('/:id', async (req, res, next) => {
+router.get('/:id/:forClient', async (req, res, next) => {
   try {
-    const question = await Question.findOne({conversationId: req.params.id}).lean();
-    const answer = await Answer.findOne({conversationId: req.params.id}).lean();
+    let question, answer;
+
+    if(req.params.forClient === 'true'){
+      answer = await Answer.findOneAndUpdate({conversationId: req.params.id },{opened: true},{new: true}).lean();
+      question = await Question.findOne({conversationId: req.params.id}).lean();
+    } else {
+      answer = await Answer.findOne({conversationId: req.params.id}).lean();
+      question = await Question.findOneAndUpdate({conversationId: req.params.id },{opened: true},{new: true}).lean();
+    }
     res.send({question, answer});
   } catch (error) {
     next(error);
