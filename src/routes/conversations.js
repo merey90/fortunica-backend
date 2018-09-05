@@ -5,6 +5,8 @@ const express = require('express'),
       Question = require('../models/question'),
       Answer = require('../models/answer');
 
+const ConversationsController = require('./../controllers/conversations.controller');
+
 /**
  * Returns list of conversations between 2 people
  * 
@@ -20,17 +22,11 @@ router.get('/:userId/:clientId/:forClient', async (req, res, next) => {
   const messageModel = req.params.forClient === 'true' ? Answer : Question;
 
   try {
-    const conversations = await Conversation.find(filter).sort('-createdAt').lean();
-    for(let index = 0; index < conversations.length; index++){
-      let message = await messageModel.findOne({conversationId: conversations[index]._id});
-      
-      if(!!message){
-        conversations[index].hasNew = !message.opened;
-      } else {
-        conversations[index].hasNew = false;
-      }
+    const result = await ConversationsController.getConversationsByUsers(filter, messageModel);
+    if(!!result.error){
+      return next(result.error);
     }
-    res.send( conversations );
+    res.send( result.conversations );
   } catch (error) {
     next(error);
   }
