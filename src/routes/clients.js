@@ -51,13 +51,11 @@ router.get('/:name', async (req, res, next) => {
  */
 router.post('/', async (req, res, next) => {
   if(!req.body.name) {
-    res.status(422).send({ error: 'Please enter a name of new Client.' });
-    next();
+    return res.status(422).send({ error: 'Please enter a name of new Client.' });
   }
 
   if(!req.body.zodiac) {
-    res.status(422).send({ error: 'Please choose a zodiac of new Client.' });
-    next();
+    return res.status(422).send({ error: 'Please choose a zodiac of new Client.' });
   }
 
   const client = new Client({

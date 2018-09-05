@@ -5,11 +5,11 @@ const express = require('express'),
 
 router.post('/', async (req, res, next) => {
   if(!req.body.conversation) {
-    res.status(422).send({ error: 'Please choose a valid conversation.' });
+    return res.status(422).send({ error: 'Please choose a valid conversation.' });
   }
 
   if(!req.body.content) {
-    res.status(422).send({ error: 'Please enter a message.' });
+    return res.status(422).send({ error: 'Please enter a message.' });
   }
 
   const answer = new Answer({

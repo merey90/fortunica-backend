@@ -6,18 +6,15 @@ const express = require('express'),
 
 router.post('/', async (req, res, next) => {
   if(!req.body.user) {
-    res.status(422).send({ error: 'Please choose a valid expert for your message.' });
-    return next();
+    return res.status(422).send({ error: 'Please choose a valid expert for your message.' });
   }
 
   if(!req.body.title) {
-    res.status(422).send({ error: 'Please enter a title.' });
-    return next();
+    return res.status(422).send({ error: 'Please enter a title.' });
   }
 
   if(!req.body.content) {
-    res.status(422).send({ error: 'Please enter a message.' });
-    return next();
+    return res.status(422).send({ error: 'Please enter a message.' });
   }
 
   const conversation = new Conversation({
