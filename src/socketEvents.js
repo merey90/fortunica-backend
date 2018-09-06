@@ -56,12 +56,17 @@ exports = module.exports = function(io) {
           client: question.client
         };
         const conversationsResultAns = await ConversationsController.getConversationsByUsers(filter, Answer);
-        const conversationsResultQue = await ConversationsController.getConversationsByUsers(filter, Question);
-        if(!!conversationsResultAns.error || !!conversationsResultQue.error){
+        if(!!conversationsResultAns.error){
           //emit error
           socket.emit('handleError', { error: 'Can\'t get conversations list.' });
           return;
-        } else if(!!persons[question.user].socket){
+        } else if(!!persons[question.user]){
+          const conversationsResultQue = await ConversationsController.getConversationsByUsers(filter, Question);
+          if(!!conversationsResultQue.error){
+            //emit error
+            socket.emit('handleError', { error: 'Can\'t get conversations list.' });
+            return;
+          }
           persons[question.user].socket.emit('getConversations', conversationsResultQue.conversations);
           persons[question.user].socket.emit('newNotification', {
             message: 'You have new Question',
@@ -72,6 +77,7 @@ exports = module.exports = function(io) {
         socket.emit('getConversations', conversationsResultAns.conversations);
         
       } catch (error) {
+        console.log(error);
         socket.emit('handleError', { error });
       }
 
@@ -107,15 +113,20 @@ exports = module.exports = function(io) {
           user: answer.user,
           client: answer.client
         };
-        // conversations with marked new Answers
-        const conversationsResultAns = await ConversationsController.getConversationsByUsers(filter, Answer);
         // conversations with marked new Questions
         const conversationsResultQue = await ConversationsController.getConversationsByUsers(filter, Question);
-        if(!!conversationsResultAns.error || !!conversationsResultQue.error){
+        if(!!conversationsResultQue.error){
           //emit error
           socket.emit('handleError', { error: 'Can\'t get conversations list.' });
           return;
-        } else if(!!persons[answer.client].socket){
+        } else if(!!persons[answer.client]){
+          // conversations with marked new Answers
+          const conversationsResultAns = await ConversationsController.getConversationsByUsers(filter, Answer);
+          if(!!conversationsResultAns.error){
+            //emit error
+            socket.emit('handleError', { error: 'Can\'t get conversations list.' });
+            return;
+          }
           persons[answer.client].socket.emit('getConversations', conversationsResultAns.conversations);
           persons[answer.client].socket.emit('newNotification', {
             message: 'You have new Answer',
@@ -124,9 +135,7 @@ exports = module.exports = function(io) {
           });
         }
         socket.emit('getConversations', conversationsResultQue.conversations);
-        
       } catch (error) {
-        console.log(error);
         socket.emit('handleError', { error });
       }
     });
